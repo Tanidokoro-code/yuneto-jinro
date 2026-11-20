@@ -555,7 +555,46 @@
         updateStartButton();
       }
     }
+    async function leaveRoom() {
+      if (!confirm("このルームから退出しますか？")) {
+        return;
+      }
 
+      clearError();
+
+      try {
+        await postJson(
+          "/api/room/" + currentRoom + "/leave",
+          {
+            playerId: currentPlayerId
+          }
+        );
+
+        if (socket) {
+          socket.close();
+          socket = null;
+        }
+
+        currentRoom = null;
+        currentPlayerId = null;
+        currentPlayers = [];
+        isHost = false;
+        myRole = null;
+        socketReady = false;
+
+        document.getElementById("createName").value = "";
+        document.getElementById("joinName").value = "";
+        document.getElementById("joinCode").value = "";
+
+        document.getElementById("hostControls")
+          .classList.add("hidden");
+
+        showScreen("homeScreen");
+
+      } catch (error) {
+        showError(error.message);
+      }
+    }
     function showRole() {
       const roleText = document.getElementById("roleText");
 
