@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ユネェト人狼</title>
+
+<style>
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: #111827;
+  color: white;
+  font-family: sans-serif;
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
+}
+
+.container {
+  width: 100%;
+  max-width: 420px;
+  text-align: center;
+}
+
+.logo {
+  font-size: 65px;
+  margin-bottom: 10px;
+}
+
+h1 {
+  font-size: 36px;
+  letter-spacing: 3px;
+  margin: 10px 0;
+}
+
+.subtitle {
+  color: #9ca3af;
+  margin-bottom: 45px;
+  font-size: 14px;
+}
+
+button {
+  width: 100%;
+  padding: 18px;
+  border: none;
+  border-radius: 12px;
+  font-size: 17px;
+  font-weight: bold;
+  margin-bottom: 16px;
+  cursor: pointer;
+}
+
+.create {
+  background: #dc2626;
+  color: white;
+}
+
+.join {
+  background: #374151;
+  color: white;
+  border: 1px solid #6b7280;
+}
+
+input {
+  width: 100%;
+  padding: 16px;
+  border-radius: 10px;
+  border: 1px solid #4b5563;
+  background: #1f2937;
+  color: white;
+  font-size: 17px;
+  margin-bottom: 15px;
+}
+
+input::placeholder {
+  color: #9ca3af;
+}
+
+#form {
+  display: none;
+  margin-top: 25px;
+}
+
+.back {
+  background: transparent;
+  color: #9ca3af;
+  border: 1px solid #4b5563;
+}
+
+.footer {
+  color: #6b7280;
+  font-size: 12px;
+  margin-top: 45px;
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+  <div class="logo">🐺</div>
+
+  <h1>ユネェト人狼</h1>
+
+  <div class="subtitle">
+    友達と楽しむオンライン人狼ゲーム
+  </div>
+
+  <div id="menu">
+    <button class="create" onclick="showForm('create')">
+      ルームを作成する
+    </button>
+
+    <button class="join" onclick="showForm('join')">
+      ルームに参加する
+    </button>
+  </div>
+
+  <div id="form">
+
+    <h2 id="formTitle"></h2>
+
+    <input
+      type="text"
+      id="playerName"
+      placeholder="プレイヤー名を入力"
+      maxlength="12"
+    >
+
+    <input
+      type="text"
+      id="roomCode"
+      placeholder="6桁のルーム番号"
+      maxlength="6"
+      inputmode="numeric"
+      style="display:none"
+    >
+
+    <button class="create" onclick="submitForm()">
+      次へ
+    </button>
+
+    <button class="back" onclick="backMenu()">
+      戻る
+    </button>
+
+  </div>
+
+  <div class="footer">
+    YUNETO JINRO
+  </div>
+
+</div>
+
+<script>
+let mode = "";
+
+function showForm(type) {
+  mode = type;
+
+  document.getElementById("menu").style.display = "none";
+  document.getElementById("form").style.display = "block";
+
+  document.getElementById("formTitle").textContent =
+    type === "create" ? "ルームを作成" : "ルームに参加";
+
+  document.getElementById("roomCode").style.display =
+    type === "join" ? "block" : "none";
+}
+
+function backMenu() {
+  document.getElementById("menu").style.display = "block";
+  document.getElementById("form").style.display = "none";
+}
+
+function submitForm() {
+  const name = document.getElementById("playerName").value.trim();
+  const code = document.getElementById("roomCode").value.trim();
+
+  if (!name) {
+    alert("プレイヤー名を入力してください");
+    return;
+  }
+
+  if (mode === "join" && !/^\d{6}$/.test(code)) {
+    alert("6桁のルーム番号を入力してください");
+    return;
+  }
+
+  alert("次の開発ステップでルーム機能を実装します！");
+}
+</script>
+
+</body>
+</html>
