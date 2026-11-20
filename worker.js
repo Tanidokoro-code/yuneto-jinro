@@ -174,7 +174,62 @@ export class GameRoom {
         players: room.players
       });
     }
+    if (url.pathname === "/leave" && request.method === "POST") {
+      const data = await request.json();
+      const room = await this.getRoom();
 
+      if (!room) {
+        return Response.json(
+          { error: "ルームがありません" },
+          { status: 404 }
+        );
+      }
+
+      const playerIndex = room.players.findIndex(
+        p => p.id === data.playerId
+      );
+
+      if (playerIndex === -1) {
+        return Response.json(
+          { error: "参加者が見つかりません" },
+          { status: 404 }
+        );
+      }
+
+      const leavingPlayer = room.players[playerIndex];
+      room.players.splice(playerIndex, 1);
+
+      for (const ws of this.ctx.getWebSockets()) {
+        const attachment = ws.deserializeAttachment();
+
+        if (attachment.playerId === data.playerId) {
+          try {
+            ws.close(1000, "退出しました");
+          } catch {}
+        }
+      }
+
+      if (leavingPlayer.host && room.players.length > 0) {
+        room.players[0].host = true;
+        room.hostId = room.players[0].id;
+      }
+
+      if (room.players.length === 0) {
+        await this.ctx.storage.delete("room");
+
+        return Response.json({
+          success: true
+        });
+      }
+
+      await this.ctx.storage.put("room", room);
+      await this.broadcast(room);
+
+      return Response.json({
+        success: true,
+        players: room.players
+      });
+    }
     if (url.pathname === "/ws") {
       if (request.headers.get("Upgrade") !== "websocket") {
         return new Response("WebSocket required", {
