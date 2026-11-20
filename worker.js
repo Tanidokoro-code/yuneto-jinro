@@ -40,7 +40,7 @@ export default {
     }
 
     const match = url.pathname.match(
-      /^\/api\/room\/(\d{6})\/(ws|start)$/
+      /^\/api\/room\/(\d{6})\/(ws|start|leave)$/
     );
 
     if (match) {
