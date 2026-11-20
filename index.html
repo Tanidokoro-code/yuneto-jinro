@@ -1,202 +1,570 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>ユネェト人狼</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#10152b">
+  <title>ユネェト人狼</title>
 
-<style>
-* {
-  box-sizing: border-box;
-}
+  <style>
+    * {
+      box-sizing: border-box;
+    }
 
-body {
-  margin: 0;
-  background: #111827;
-  color: white;
-  font-family: sans-serif;
-  min-height: 100vh;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  padding: 20px;
-}
+    body {
+      margin: 0;
+      padding: 20px;
+      min-height: 100vh;
+      background: #10152b;
+      color: white;
+      font-family: sans-serif;
+    }
 
-.container {
-  width: 100%;
-  max-width: 420px;
-  text-align: center;
-}
+    .container {
+      max-width: 480px;
+      margin: 0 auto;
+    }
 
-.logo {
-  font-size: 65px;
-  margin-bottom: 10px;
-}
+    h1 {
+      text-align: center;
+      font-size: 34px;
+      margin: 30px 0 8px;
+    }
 
-h1 {
-  font-size: 36px;
-  letter-spacing: 3px;
-  margin: 10px 0;
-}
+    .subtitle {
+      text-align: center;
+      color: #aab2d5;
+      margin-bottom: 35px;
+    }
 
-.subtitle {
-  color: #9ca3af;
-  margin-bottom: 45px;
-  font-size: 14px;
-}
+    .card {
+      background: #202844;
+      border-radius: 16px;
+      padding: 22px;
+      margin-bottom: 18px;
+    }
 
-button {
-  width: 100%;
-  padding: 18px;
-  border: none;
-  border-radius: 12px;
-  font-size: 17px;
-  font-weight: bold;
-  margin-bottom: 16px;
-  cursor: pointer;
-}
+    h2 {
+      margin-top: 0;
+      font-size: 21px;
+    }
 
-.create {
-  background: #dc2626;
-  color: white;
-}
+    input, select {
+      width: 100%;
+      padding: 14px;
+      margin: 8px 0 14px;
+      border: none;
+      border-radius: 9px;
+      font-size: 16px;
+    }
 
-.join {
-  background: #374151;
-  color: white;
-  border: 1px solid #6b7280;
-}
+    button {
+      width: 100%;
+      padding: 15px;
+      margin-top: 10px;
+      border: none;
+      border-radius: 10px;
+      background: #6878ff;
+      color: white;
+      font-size: 17px;
+      font-weight: bold;
+      cursor: pointer;
+    }
 
-input {
-  width: 100%;
-  padding: 16px;
-  border-radius: 10px;
-  border: 1px solid #4b5563;
-  background: #1f2937;
-  color: white;
-  font-size: 17px;
-  margin-bottom: 15px;
-}
+    button:disabled {
+      opacity: 0.45;
+    }
 
-input::placeholder {
-  color: #9ca3af;
-}
+    .secondary {
+      background: #46516e;
+    }
 
-#form {
-  display: none;
-  margin-top: 25px;
-}
+    .hidden {
+      display: none;
+    }
 
-.back {
-  background: transparent;
-  color: #9ca3af;
-  border: 1px solid #4b5563;
-}
+    .room-code {
+      text-align: center;
+      font-size: 36px;
+      letter-spacing: 7px;
+      font-weight: bold;
+      color: #a9b5ff;
+      margin: 15px 0;
+    }
 
-.footer {
-  color: #6b7280;
-  font-size: 12px;
-  margin-top: 45px;
-}
-</style>
+    .player {
+      padding: 12px;
+      margin: 7px 0;
+      background: #303c5c;
+      border-radius: 8px;
+    }
+
+    .host-label {
+      color: #ffd76a;
+      font-size: 13px;
+      margin-left: 6px;
+    }
+
+    .message {
+      text-align: center;
+      color: #ffb2b2;
+      margin: 12px 0;
+      white-space: pre-wrap;
+    }
+
+    .status {
+      text-align: center;
+      color: #aab2d5;
+      font-size: 14px;
+      margin-top: 12px;
+    }
+
+    .role {
+      text-align: center;
+      font-size: 34px;
+      font-weight: bold;
+      padding: 35px 10px;
+      border-radius: 14px;
+      background: #303c5c;
+      margin-top: 20px;
+    }
+
+    .role.wolf {
+      color: #ff7777;
+    }
+
+    .role.villager {
+      color: #8dffb1;
+    }
+
+    .center {
+      text-align: center;
+    }
+
+    .small {
+      color: #aab2d5;
+      font-size: 13px;
+    }
+  </style>
 </head>
 
 <body>
+  <div class="container">
 
-<div class="container">
+    <h1>🐺 ユネェト人狼</h1>
+    <p class="subtitle">用</p>
 
-  <div class="logo">🐺</div>
+    <!-- ホーム画面 -->
+    <section id="homeScreen">
 
-  <h1>ユネェト人狼</h1>
+      <div class="card">
+        <h2>ルームを作成する</h2>
 
-  <div class="subtitle">
-    友達と楽しむオンライン人狼ゲーム
+        <input
+          id="createName"
+          type="text"
+          placeholder="プレイヤー名"
+          maxlength="12"
+        >
+
+        <button onclick="createRoom()">
+          ルームを作成
+        </button>
+      </div>
+
+      <div class="card">
+        <h2>ルームに参加する</h2>
+
+        <input
+          id="joinName"
+          type="text"
+          placeholder="プレイヤー名"
+          maxlength="12"
+        >
+
+        <input
+          id="joinCode"
+          type="text"
+          placeholder="6桁のルーム番号"
+          inputmode="numeric"
+          maxlength="6"
+        >
+
+        <button onclick="joinRoom()">
+          参加する
+        </button>
+      </div>
+
+    </section>
+
+    <!-- 待機画面 -->
+    <section id="roomScreen" class="hidden">
+
+      <div class="card">
+        <h2 class="center">ルーム番号</h2>
+
+        <div id="roomCode" class="room-code"></div>
+
+        <p class="center small">
+          この番号を友達に共有してね！
+        </p>
+      </div>
+
+      <div class="card">
+        <h2>参加者一覧</h2>
+
+        <p id="playerCount" class="small"></p>
+
+        <div id="playerList"></div>
+      </div>
+
+      <div id="hostControls" class="card hidden">
+        <h2>ゲーム設定</h2>
+
+        <label for="werewolfCount">
+          人狼の人数
+        </label>
+
+        <select id="werewolfCount">
+          <option value="1">1人</option>
+          <option value="2">2人</option>
+          <option value="3">3人</option>
+          <option value="4">4人</option>
+          <option value="5">5人</option>
+        </select>
+
+        <button id="startButton" onclick="startGame()">
+          ゲーム開始！
+        </button>
+
+        <p class="small">
+          ※人狼以外のプレイヤーは村人になります。
+        </p>
+      </div>
+
+      <p id="waitingMessage" class="status">
+        ホストがゲームを開始するまで待機中...
+      </p>
+
+      <p id="connectionStatus" class="status">
+        サーバーに接続中...
+      </p>
+
+    </section>
+
+    <!-- 役職画面 -->
+    <section id="roleScreen" class="hidden">
+
+      <div class="card">
+        <h2 class="center">あなたの役職</h2>
+
+        <div id="roleText" class="role"></div>
+
+        <p class="center">
+          他のプレイヤーにはあなたの役職は表示されません。
+        </p>
+      </div>
+
+      <div class="card">
+        <h2>参加者一覧</h2>
+        <div id="rolePlayerList"></div>
+      </div>
+
+      <p class="status">
+        役職を確認したら、ゲームを始めよう！
+      </p>
+
+    </section>
+
+    <p id="errorMessage" class="message"></p>
+
   </div>
 
-  <div id="menu">
-    <button class="create" onclick="showForm('create')">
-      ルームを作成する
-    </button>
+  <script>
+    let currentRoom = null;
+    let currentPlayerId = null;
+    let currentPlayers = [];
+    let isHost = false;
+    let socket = null;
+    let myRole = null;
+    let socketReady = false;
 
-    <button class="join" onclick="showForm('join')">
-      ルームに参加する
-    </button>
-  </div>
+    function showError(message) {
+      document.getElementById("errorMessage").textContent = message;
+    }
 
-  <div id="form">
+    function clearError() {
+      showError("");
+    }
 
-    <h2 id="formTitle"></h2>
+    function showScreen(screenId) {
+      document.getElementById("homeScreen").classList.add("hidden");
+      document.getElementById("roomScreen").classList.add("hidden");
+      document.getElementById("roleScreen").classList.add("hidden");
 
-    <input
-      type="text"
-      id="playerName"
-      placeholder="プレイヤー名を入力"
-      maxlength="12"
-    >
+      document.getElementById(screenId).classList.remove("hidden");
+    }
 
-    <input
-      type="text"
-      id="roomCode"
-      placeholder="6桁のルーム番号"
-      maxlength="6"
-      inputmode="numeric"
-      style="display:none"
-    >
+    async function postJson(path, data) {
+      const response = await fetch(path, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify(data)
+      });
 
-    <button class="create" onclick="submitForm()">
-      次へ
-    </button>
+      const result = await response.json();
 
-    <button class="back" onclick="backMenu()">
-      戻る
-    </button>
+      if (!response.ok) {
+        throw new Error(result.error || "通信に失敗しました");
+      }
 
-  </div>
+      return result;
+    }
 
-  <div class="footer">
-    YUNETO JINRO
-  </div>
+    async function createRoom() {
+      clearError();
 
-</div>
+      const name = document.getElementById("createName").value.trim();
 
-<script>
-let mode = "";
+      if (!name) {
+        showError("プレイヤー名を入力してください");
+        return;
+      }
 
-function showForm(type) {
-  mode = type;
+      try {
+        const result = await postJson("/api/create", {
+          name
+        });
 
-  document.getElementById("menu").style.display = "none";
-  document.getElementById("form").style.display = "block";
+        enterRoom(result, true);
 
-  document.getElementById("formTitle").textContent =
-    type === "create" ? "ルームを作成" : "ルームに参加";
+      } catch (error) {
+        showError(error.message);
+      }
+    }
 
-  document.getElementById("roomCode").style.display =
-    type === "join" ? "block" : "none";
-}
+    async function joinRoom() {
+      clearError();
 
-function backMenu() {
-  document.getElementById("menu").style.display = "block";
-  document.getElementById("form").style.display = "none";
-}
+      const name = document.getElementById("joinName").value.trim();
+      const code = document.getElementById("joinCode").value.trim();
 
-function submitForm() {
-  const name = document.getElementById("playerName").value.trim();
-  const code = document.getElementById("roomCode").value.trim();
+      if (!name) {
+        showError("プレイヤー名を入力してください");
+        return;
+      }
 
-  if (!name) {
-    alert("プレイヤー名を入力してください");
-    return;
-  }
+      if (!/^\d{6}$/.test(code)) {
+        showError("6桁のルーム番号を入力してください");
+        return;
+      }
 
-  if (mode === "join" && !/^\d{6}$/.test(code)) {
-    alert("6桁のルーム番号を入力してください");
-    return;
-  }
+      try {
+        const result = await postJson("/api/join", {
+          name,
+          code
+        });
 
-  alert("次の開発ステップでルーム機能を実装します！");
-}
-</script>
+        enterRoom(result, false);
 
+      } catch (error) {
+        showError(error.message);
+      }
+    }
+
+    function enterRoom(result, host) {
+      currentRoom = result.code;
+      currentPlayerId = result.playerId;
+      currentPlayers = result.players;
+      isHost = host;
+
+      myRole = null;
+      socketReady = false;
+
+      document.getElementById("roomCode").textContent = currentRoom;
+
+      document.getElementById("hostControls")
+        .classList.toggle("hidden", !isHost);
+
+      document.getElementById("waitingMessage").textContent =
+        isHost
+          ? "参加者が集まったらゲームを開始しよう！"
+          : "ホストがゲームを開始するまで待機中...";
+
+      updatePlayers();
+      updateWerewolfOptions();
+      showScreen("roomScreen");
+
+      connectWebSocket();
+    }
+
+    function connectWebSocket() {
+      const protocol = location.protocol === "https:" ? "wss:" : "ws:";
+
+      const wsUrl =
+        protocol + "//" + location.host +
+        "/api/room/" + currentRoom +
+        "/ws?playerId=" + encodeURIComponent(currentPlayerId);
+
+      socket = new WebSocket(wsUrl);
+
+      socket.onopen = () => {
+        socketReady = true;
+
+        document.getElementById("connectionStatus").textContent =
+          "🟢 サーバーに接続しました";
+
+        updateStartButton();
+      };
+
+      socket.onmessage = (event) => {
+        const data = JSON.parse(event.data);
+
+        if (data.type === "players") {
+          currentPlayers = data.players;
+
+          updatePlayers();
+          updateWerewolfOptions();
+          updateStartButton();
+        }
+
+        if (data.type === "role") {
+          myRole = data.role;
+          showRole();
+        }
+      };
+
+      socket.onclose = () => {
+        socketReady = false;
+
+        document.getElementById("connectionStatus").textContent =
+          "🔴 サーバーとの接続が切れました";
+        updateStartButton();
+      };
+
+      socket.onerror = () => {
+        document.getElementById("connectionStatus").textContent =
+          "🔴 接続エラーが発生しました";
+      };
+    }
+
+    function updatePlayers() {
+      const list = document.getElementById("playerList");
+      const roleList = document.getElementById("rolePlayerList");
+
+      list.innerHTML = "";
+      roleList.innerHTML = "";
+
+      document.getElementById("playerCount").textContent =
+        currentPlayers.length + "人が参加中";
+
+      currentPlayers.forEach((player) => {
+        const div = document.createElement("div");
+        div.className = "player";
+        div.textContent = player.name;
+
+        if (player.host) {
+          const label = document.createElement("span");
+          label.className = "host-label";
+          label.textContent = "👑 ホスト";
+          div.appendChild(label);
+        }
+
+        list.appendChild(div);
+
+        const roleDiv = document.createElement("div");
+        roleDiv.className = "player";
+        roleDiv.textContent = player.name;
+        roleList.appendChild(roleDiv);
+      });
+    }
+
+    function updateWerewolfOptions() {
+      const select = document.getElementById("werewolfCount");
+      const max = Math.min(5, currentPlayers.length - 1);
+      const previous = Number(select.value);
+
+      select.innerHTML = "";
+
+      for (let i = 1; i <= max; i++) {
+        const option = document.createElement("option");
+        option.value = i;
+        option.textContent = i + "人";
+        select.appendChild(option);
+      }
+
+      if (max >= 1) {
+        select.value = Math.min(previous || 1, max);
+      }
+
+      updateStartButton();
+    }
+
+    function updateStartButton() {
+      const button = document.getElementById("startButton");
+
+      if (!isHost) return;
+
+      button.disabled =
+        !socketReady ||
+        currentPlayers.length < 2 ||
+        currentPlayers.length > 20;
+    }
+
+    async function startGame() {
+      clearError();
+
+      const werewolfCount = Number(
+        document.getElementById("werewolfCount").value
+      );
+
+      if (!socketReady) {
+        showError("サーバーに接続できていません");
+        return;
+      }
+
+      if (currentPlayers.length < 2) {
+        showError("2人以上でゲームを開始してください");
+        return;
+      }
+
+      const button = document.getElementById("startButton");
+      button.disabled = true;
+      button.textContent = "開始処理中...";
+
+      try {
+        await postJson(
+          "/api/room/" + currentRoom + "/start",
+          {
+            playerId: currentPlayerId,
+            werewolfCount
+          }
+        );
+
+      } catch (error) {
+        showError(error.message);
+        button.textContent = "ゲーム開始！";
+        updateStartButton();
+      }
+    }
+
+    function showRole() {
+      const roleText = document.getElementById("roleText");
+
+      roleText.textContent = "あなたは「" + myRole + "」です";
+
+      roleText.className = "role";
+
+      if (myRole === "人狼") {
+        roleText.classList.add("wolf");
+      } else {
+        roleText.classList.add("villager");
+      }
+
+      showScreen("roleScreen");
+    }
+  </script>
 </body>
 </html>
